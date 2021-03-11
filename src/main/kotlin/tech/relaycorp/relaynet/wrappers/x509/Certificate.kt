@@ -132,16 +132,18 @@ class Certificate constructor(internal val certificateHolder: X509CertificateHol
             }
             return Certificate(certificateHolder)
         }
+
+        private fun getCommonName(x500Name: X500Name): String {
+            val commonNames = x500Name.getRDNs(BCStyle.CN)
+            return commonNames.first().first.value.toString()
+        }
     }
 
     /**
      * Return the Common Name of the subject
      */
     val commonName: String
-        get() {
-            val commonNames = certificateHolder.subject.getRDNs(BCStyle.CN)
-            return commonNames.first().first.value.toString()
-        }
+        get() = getCommonName(certificateHolder.subject)
 
     /**
      * The public key of the subject.
@@ -154,6 +156,12 @@ class Certificate constructor(internal val certificateHolder: X509CertificateHol
      */
     val subjectPrivateAddress
         get() = "0" + getSHA256DigestHex(certificateHolder.subjectPublicKeyInfo.encoded)
+
+    /**
+     * Return the Common Name of the issuer
+     */
+    val issuerCommonName: String
+        get() = getCommonName(certificateHolder.issuer)
 
     /**
      * The start date of the certificate.

@@ -640,6 +640,25 @@ class CertificateTest {
                 certificate.subjectPublicKey.encoded.asList()
             )
         }
+
+        @Test
+        fun issuerCommonName() {
+            val issuerKeyPair = generateRSAKeyPair()
+            val issuerCertificate = issueStubCertificate(
+                issuerKeyPair.public,
+                issuerKeyPair.private,
+                isCA = true
+            )
+            val certificate = Certificate.issue(
+                stubSubjectCommonName,
+                stubSubjectKeyPair.public,
+                issuerKeyPair.private,
+                stubValidityEndDate,
+                issuerCertificate
+            )
+
+            assertEquals(issuerCertificate.commonName, certificate.issuerCommonName)
+        }
     }
 
     @Nested
